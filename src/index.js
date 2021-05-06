@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { GamerRater } from './components/GamerRater';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <GamerRater />
   </React.StrictMode>,
   document.getElementById('root')
 );
