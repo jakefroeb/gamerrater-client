@@ -128,9 +128,15 @@ export const GameForm = () => {
                     if(gameId){
                         const game = {
                             id: currentGame.id,
-                            gameTypeId: parseInt(currentGame.game_type_id),
-                            name: currentGame.name
-                        }
+                            title: currentGame.title,
+                            description:currentGame.description,
+                            designer:currentGame.designer,
+                            year:parseInt(currentGame.year),
+                            age:parseInt(currentGame.age),
+                            players:parseInt(currentGame.players),
+                            time:parseInt(currentGame.time),
+                            categories: currentGame.category_set.map(c => c.id)
+                    }
                         updateGame(game).then(() => history.push("/"))
                     }else{
                         const game = {
@@ -141,7 +147,7 @@ export const GameForm = () => {
                                 age:parseInt(currentGame.age),
                                 players:parseInt(currentGame.players),
                                 time:parseInt(currentGame.time),
-                                categories: currentGame.categories.map(c => c.id)
+                                categories: currentGame.category_set.map(c => c.id)
                         }
                         createGame(game).then(() => history.push("/"))
                     }
