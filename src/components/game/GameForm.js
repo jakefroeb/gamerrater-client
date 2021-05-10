@@ -39,7 +39,6 @@ export const GameForm = () => {
 
     return (
         <form className="gameForm">
-            {console.log(currentGame)}
             <h2 className="gameForm__title">Register New Game</h2>
             <fieldset>
                 <div className="form-group">
