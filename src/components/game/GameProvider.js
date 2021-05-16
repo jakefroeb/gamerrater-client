@@ -5,6 +5,7 @@ export const GameContext = React.createContext()
 export const GameProvider = (props) => {
     const [ games, setGames ] = useState([])
     const [ categories, setCategories ] = useState([])
+    const [images, setImages ] = useState([])
     const deleteGame = (gameId) => {
         return fetch(`http://localhost:8000/games/${gameId}`, {
             method:"DELETE",
@@ -62,10 +63,48 @@ export const GameProvider = (props) => {
         })
         .then(getGames)
     }
+    const uploadImage = (img) => {
+        return fetch(`http://localhost:8000/images`,{
+            method:"POST",
+            headers:{
+                "Authorization": `Token ${localStorage.getItem("lu_token")}`,
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify(img)
+        })
+        .then(()=>getImages(img.gameId))
+    }
+    const getImages = (gameId) => {
+        return fetch(`http://localhost:8000/images?gameId=${gameId}`,{
+            headers:{
+                "Authorization": `Token ${localStorage.getItem("lu_token")}`
+            }})
+            .then(res => res.json())
+            .then(setImages)
+    }
+    const searchGames = (search) => {
+        return fetch(`http://localhost:8000/games?q=${search}`,{
+            headers:{
+                "Authorization": `Token ${localStorage.getItem("lu_token")}`
+            }
+        })
+        .then(res=> res.json())
+        .then(setGames)
+
+    }
+    const sortGames = (sort) => {
+        return fetch(`http://localhost:8000/games?orderby=${sort}`,{
+            headers:{
+                "Authorization": `Token ${localStorage.getItem("lu_token")}`
+            }
+        })
+        .then(res => res.json())
+        .then(setGames)
+    }
 
 
     return (
-        <GameContext.Provider value={{ games, getGames, createGame, getCategories, categories, getGameById, deleteGame, updateGame }} >
+        <GameContext.Provider value={{ games, getGames, createGame, getCategories, categories, getGameById, deleteGame, updateGame, uploadImage, getImages, images, searchGames, sortGames}} >
             { props.children }
         </GameContext.Provider>
     )
