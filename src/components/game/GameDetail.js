@@ -8,9 +8,10 @@ import StarRatings from 'react-star-ratings'
 export const GameDetail = () => {
     
     const history = useHistory()
-    const {getGameById, deleteGame} = useContext(GameContext)
+    const {getGameById, deleteGame, uploadImage, getImages, images} = useContext(GameContext)
     const {getReviews, reviews, createReview, deleteReview, updateReview} = useContext(ReviewContext)
     const [modalOpen, setModalOpen] = useState(false)
+    const [imageString, setImgString] = useState("")
     const [currentGame, setCurrentGame] = useState({
         title: "",
         description:"",
@@ -29,7 +30,9 @@ export const GameDetail = () => {
         rating:0,
         game:gameId
     })
-
+    useEffect(()=>{
+        getImages(gameId)
+    },[gameId])
     useEffect(()=>{
         getGameById(gameId).then(setCurrentGame)
     },[reviews])
@@ -46,10 +49,23 @@ export const GameDetail = () => {
         tempReview.rating = e
         setCurrentReview(tempReview)
     }
+    const getBase64 = (file, callback) => {
+        const reader = new FileReader();
+        reader.addEventListener('load', () => callback(reader.result));
+        reader.readAsDataURL(file);
+    }
+    
+    const createGameImageString = (event) => {
+        getBase64(event.target.files[0], (base64ImageString) => {
+            setImgString(base64ImageString)
+        });
+    }
+    
 
     return (
         <article className="game">
             <h2>{currentGame.title}</h2>
+            
             <div className="game__creator">user : {currentGame.creator?.first_name} {currentGame.creator?.last_name}</div>
             <div className="game__description">description : {currentGame.description}</div>
             <div className="game__designer">designer : {currentGame.designer}</div>
@@ -65,12 +81,21 @@ export const GameDetail = () => {
                 return <li>{c.name}</li>
                 })}
             </ul> </div>
+            <h4>Images</h4>
+            <ul>
+                {images.map(image => <img src={image.image}alt="image"/>)}
+            </ul>
             <button className="editButton" onClick = {() => {
                 history.push({ pathname: `/games/edit/${currentGame.id}`})
                 }}>edit</button>
             <button className="delete_button" onClick={()=>{
                 deleteGame(currentGame.id).then(history.push("/"))
                 }}>delete</button>
+             <input type="file" id="game_image" onChange={createGameImageString} />
+             <input type="hidden" name="game_id" value={currentGame.id} />
+                <button onClick={() => {
+                    uploadImage({game_id:currentGame.id,game_image:imageString})
+                    }}>Upload</button>
             <section className="reviews">
                 <Button color="primary" onClick={e=>setModalOpen(true)}>Add Review</Button>
                 <Modal isOpen={modalOpen}>
